@@ -1,0 +1,14 @@
+.DS_Store
+.flatpak-builder*/
+flatpak-github-action-modified-*
+*.flatpak
+*.key
+*.swo
+*.swp
+*~
+/_site/
+/build/
+/repo/
+flatpak-keyring/
+private.key
+Thumbs.db

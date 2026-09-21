@@ -1,0 +1,115 @@
+name: Flatpaks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2 * * 0" # weekly, picks up runtime and BaseApp updates
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # never cancel a run on main: it may be halfway through publishing
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    name: Build Flatpaks
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    container:
+      # Ships flatpak, flatpak-builder and xvfb with the Flathub remote already configured.
+      # Runtimes, BaseApps and SDK extensions are installed on demand (--install-deps-from),
+      # so this tag does not have to match the runtime version the manifests build against.
+      image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-25.08
+      options: --privileged
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # Only main publishes. Pull requests (which have no access to secrets) build unsigned.
+      - name: Import GPG key
+        id: gpg
+        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+        uses: crazy-max/ghaction-import-gpg@v7
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+
+      # Every app is exported into the same OSTree repo (`repo`), which is what makes this
+      # a single remote. When a step has no fingerprint (pull requests) gpg-sign is empty and
+      # flatpak-builder skips signing.
+      - name: Build org.freedesktop.Sdk.Extension.podman
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          manifest-path: src/org.freedesktop.Sdk.Extension.podman/org.freedesktop.Sdk.Extension.podman.yml
+          repo-dir: repo
+          state-dir: .flatpak-builder-podman
+          branch: stable # only a fallback: the manifest sets its own branch (the runtime version)
+          build-bundle: false
+          upload-artifact: false
+          gpg-sign: ${{ steps.gpg.outputs.fingerprint }}
+
+      - name: Build ai.claude.desktop
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          manifest-path: src/ai.claude.desktop/ai.claude.desktop.yml
+          repo-dir: repo
+          state-dir: .flatpak-builder-claude
+          branch: stable
+          build-bundle: false
+          upload-artifact: false
+          gpg-sign: ${{ steps.gpg.outputs.fingerprint }}
+
+      - name: Build com.visualstudio.code
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          manifest-path: src/com.visualstudio.code/com.visualstudio.code.yaml
+          repo-dir: repo
+          state-dir: .flatpak-builder-vscode
+          branch: stable
+          build-bundle: false
+          upload-artifact: false
+          gpg-sign: ${{ steps.gpg.outputs.fingerprint }}
+
+      - name: List exported refs
+        run: ostree --repo=repo refs
+
+      # flatpak-builder signs each commit but not the repo summary, which clients also verify.
+      - name: Sign repository summary
+        if: ${{ steps.gpg.outputs.fingerprint != '' }}
+        env:
+          FINGERPRINT: ${{ steps.gpg.outputs.fingerprint }}
+        run: flatpak build-update-repo --gpg-sign="$FINGERPRINT" --prune repo
+
+      - name: Assemble site
+        if: ${{ steps.gpg.outputs.fingerprint != '' }}
+        env:
+          FINGERPRINT: ${{ steps.gpg.outputs.fingerprint }}
+        run: bin/make-site.sh repo _site "$FINGERPRINT"
+
+      - name: Upload site
+        if: ${{ steps.gpg.outputs.fingerprint != '' }}
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    name: Deploy
+    needs: build
+    if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# build — build one app from src/ and install it for the current user.
+#
+# Usage: bin/build <app-id> [--no-install]
+#
+#   bin/build com.visualstudio.code
+#   bin/build org.freedesktop.Sdk.Extension.podman --no-install
+#
+# This is the local counterpart of .github/workflows/flatpaks.yml, without signing.
+# The runtime, SDK, BaseApp and SDK extensions come from Flathub: --install-deps-from
+# reads their exact versions from the manifest, so they cannot drift from it.
+
+set -euo pipefail
+
+usage() {
+    sed -n '2,/^$/{s/^# \{0,1\}//;p}' "$0" >&2
+    exit 2
+}
+
+[[ $# -ge 1 && $# -le 2 ]] || usage
+APP_ID="$1"
+INSTALL=1
+case "${2:-}" in
+    "") ;;
+    --no-install) INSTALL=0 ;;
+    *) usage ;;
+esac
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
+MANIFEST=""
+for ext in yml yaml; do
+    [[ -f "src/$APP_ID/$APP_ID.$ext" ]] && MANIFEST="src/$APP_ID/$APP_ID.$ext"
+done
+[[ -n "$MANIFEST" ]] || {
+    echo "build: no manifest at src/$APP_ID/$APP_ID.{yml,yaml}. Known apps:" >&2
+    ls src >&2
+    exit 1
+}
+
+flatpak --user remote-add --if-not-exists flathub \
+    https://dl.flathub.org/repo/flathub.flatpakrepo
+
+if command -v flatpak-builder >/dev/null 2>&1; then
+    fb() { flatpak-builder "$@"; }
+elif flatpak info --user org.flatpak.Builder >/dev/null 2>&1 || flatpak info org.flatpak.Builder >/dev/null 2>&1; then
+    fb() { flatpak run org.flatpak.Builder "$@"; }
+else
+    echo "Installing org.flatpak.Builder from Flathub..."
+    flatpak --user install --noninteractive flathub org.flatpak.Builder
+    fb() { flatpak run org.flatpak.Builder "$@"; }
+fi
+
+# Same default branch as CI. A manifest's own `branch:` (e.g. the podman extension) wins.
+fb --user --install-deps-from=flathub --force-clean --default-branch=stable \
+    --repo=build/repo "build/$APP_ID" "$MANIFEST"
+
+if [[ $INSTALL -eq 0 ]]; then
+    echo "Built into build/repo (not installed)."
+    exit 0
+fi
+
+# Build into a local repo and install with the host's own flatpak, instead of
+# `flatpak-builder --install`. org.flatpak.Builder is itself a sandboxed app, and on
+# hosts that restrict nested user namespaces (hardened/atomic distros) it cannot spawn
+# the bwrap that `flatpak install` needs: "bwrap: No permissions to create a new namespace".
+flatpak --user remote-add --if-not-exists --no-gpg-verify "${APP_ID}-local" "$ROOT/build/repo"
+flatpak --user install --noninteractive "${APP_ID}-local" "$APP_ID"
+
+echo
+echo "Installed $APP_ID."

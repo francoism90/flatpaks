@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@SITE_TITLE@</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+      body {
+        font: 16px/1.5 system-ui, sans-serif;
+        max-width: 42rem;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+      pre {
+        padding: 0.75rem 1rem;
+        overflow-x: auto;
+        background: color-mix(in srgb, currentColor 8%, transparent);
+        border-radius: 0.375rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>@SITE_TITLE@</h1>
+    <p>
+      Unofficial Flatpak builds of apps and SDK extensions that Flathub does not carry. Sources and
+      build pipeline: <a href="@HOMEPAGE@">@HOMEPAGE@</a>.
+    </p>
+
+    <h2>Add the remote</h2>
+    <p>
+      Runtimes come from Flathub, and flatpak only resolves them from remotes in the same
+      installation scope, so add both to the same scope (<code>--user</code> or system-wide).
+    </p>
+    <pre>flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+flatpak remote-add --user --if-not-exists flatpaks @SITE_URL@/index.flatpakrepo</pre>
+
+    <h2>Install</h2>
+    <pre>flatpak install flatpaks com.visualstudio.code
+flatpak install flatpaks ai.claude.desktop
+flatpak install flatpaks org.freedesktop.Sdk.Extension.podman</pre>
+
+    <p>
+      Signed with a GPG key; the public key is embedded in
+      <a href="index.flatpakrepo">index.flatpakrepo</a>.
+    </p>
+  </body>
+</html>
