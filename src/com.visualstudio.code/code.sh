@@ -71,8 +71,23 @@ if [ ! -e /etc/shells ] && [ -e /var/run/host/etc/shells ]; then
   ln -s /var/run/host/etc/shells /etc/shells
 fi
 
+# Extra Electron/Chromium flags, one per line, like Arch's code-flags.conf and
+# Flathub Chromium's chromium-flags.conf. Blank lines and # comments are ignored.
+FLAGS_FILE="${XDG_CONFIG_HOME}/code-flags.conf"
+EXTRA_ARGS=()
+
+if [ -f "$FLAGS_FILE" ]; then
+  msg "Reading flags from $FLAGS_FILE"
+  while IFS= read -r line || [ -n "$line" ]; do
+    line="${line%%#*}"
+    line="${line#"${line%%[![:space:]]*}"}"
+    line="${line%"${line##*[![:space:]]}"}"
+    [ -n "$line" ] && EXTRA_ARGS+=("$line")
+  done < "$FLAGS_FILE"
+fi
+
 exec env ELECTRON_RUN_AS_NODE=1 PATH="${PATH}:${XDG_DATA_HOME}/node_modules/bin" \
   TMPDIR="$XDG_RUNTIME_DIR/app/${FLATPAK_ID:-com.visualstudio.code}" \
   /app/bin/zypak-wrapper.sh /app/extra/vscode/code /app/extra/vscode/resources/app/out/cli.js \
   --extensions-dir=${XDG_DATA_HOME}/vscode/extensions \
-  "$@" ${WARNING_FILE}
+  "${EXTRA_ARGS[@]}" "$@" ${WARNING_FILE}

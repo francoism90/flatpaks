@@ -4,11 +4,36 @@
 
 ## Table of Contents<!-- omit in toc -->
 
+- [Differences from Flathub](#differences-from-flathub)
 - [Install](#install)
 - [Usage](#usage)
   - [Execute commands in the host system](#execute-commands-in-the-host-system)
   - [Use host shell in the integrated terminal](#use-host-shell-in-the-integrated-terminal)
   - [Support for language extension](#support-for-language-extension)
+  - [Custom Electron flags](#custom-electron-flags)
+
+## Differences from Flathub
+
+This build is based on [flathub/com.visualstudio.code](https://github.com/flathub/com.visualstudio.code) and
+tracks it closely. It differs in the following ways:
+
+- **Custom Electron flags:** `code-flags.conf` is read at startup, see
+  [Custom Electron flags](#custom-electron-flags).
+- **Podman SDK extension:** `org.freedesktop.Sdk.Extension.podman` is published from the same remote, so
+  Dev Containers can use Podman inside the sandbox (see [Container support](#support-for-language-extension)).
+- **GnuPG agent access:** `xdg-run/gnupg` is mounted read-only, so commit signing with your host's
+  `gpg-agent` works.
+- **KDE theming:** `xdg-config/kdeglobals` is mounted read-only, so the window follows your Plasma
+  color scheme.
+- **`TMPDIR`:** set to `$XDG_RUNTIME_DIR/app/com.visualstudio.code`, the per-app runtime directory that
+  is also visible from the host, instead of the sandbox's own `/tmp`.
+- **NixOS shells:** `/etc/shells` is resolved through `/etc/static/shells` on NixOS hosts, so the
+  integrated terminal finds host shells.
+- **`host-spawn` built from source:** it is compiled with the Go SDK extension instead of bundling the
+  upstream prebuilt binaries.
+- **Tool extensions:** `com.visualstudio.code.tool.*` extensions are accepted from both the `stable` and
+  `25.08` branches.
+- **Distribution:** builds are GPG-signed and served from this repository's own remote, not Flathub.
 
 ## Install
 
@@ -117,3 +142,25 @@ FLATPAK_ENABLE_SDK_EXT=podman flatpak run com.visualstudio.code
 **Finding other SDK:**
 
 `flatpak search <TEXT>`
+
+### Custom Electron flags
+
+Extra Electron/Chromium command-line flags can be put in
+`~/.var/app/com.visualstudio.code/config/code-flags.conf`, one per line. Blank lines and `#` comments
+are ignored. This uses the same format as Arch Linux's `code-flags.conf` and Flathub Chromium's
+`chromium-flags.conf`, so an existing file can be copied over.
+
+For example, Electron does not enable WebGPU on Linux by default. To use it (e.g. for VS Code's GPU
+acceleration setting), enable it with the Vulkan backend:
+
+```bash
+cat > ~/.var/app/com.visualstudio.code/config/code-flags.conf <<'FLAGS'
+# WebGPU over Vulkan
+--enable-unsafe-webgpu
+--enable-features=Vulkan,VulkanFromANGLE,DefaultANGLEVulkan
+FLAGS
+```
+
+Restart VS Code, then check with Help → Toggle Developer Tools → `await navigator.gpu?.requestAdapter()`.
+If rendering breaks, try `--enable-features=Vulkan` on its own. Flags passed on the command line
+(`flatpak run com.visualstudio.code <flags>`) are applied after the file.
