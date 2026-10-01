@@ -68,8 +68,8 @@ modules:
         path: patches/10-podman-compose-syspath.patch
         sha256: 2c1c961bbd035be3ac2f8631770b95dc2bec3eb46eed7e2bb974b83cc7a3679e
       - type: file
-        url: https://files.pythonhosted.org/packages/6a/53/ed9d74092561d4b01a2ef1349d52cdbc135e526c245f366b089cfca6de49/python_dotenv-1.2.3.tar.gz
-        sha256: a20a594dabeaa385725aa239d5244871c143ecb356add8a20fcf23773a6c3a35
+        url: https://files.pythonhosted.org/packages/74/26/2fbeedb218a787a5eea551c7532cac4e009f83d689dd2faa0d0353473f86/python_dotenv-1.2.4.tar.gz
+        sha256: f0d53e69935a851c0dcc78f3ab7aaccd8cabef0b92382b576b824212902873c0
         x-checker-data:
           type: pypi
           name: python-dotenv
