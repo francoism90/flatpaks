@@ -157,10 +157,11 @@ acceleration setting), enable it with the Vulkan backend:
 cat > ~/.var/app/com.visualstudio.code/config/code-flags.conf <<'FLAGS'
 # WebGPU over Vulkan
 --enable-unsafe-webgpu
---enable-features=Vulkan,VulkanFromANGLE,DefaultANGLEVulkan
+--enable-features=Vulkan,VulkanFromANGLE
 FLAGS
 ```
 
 Restart VS Code, then check with Help → Toggle Developer Tools → `await navigator.gpu?.requestAdapter()`.
-If rendering breaks, try `--enable-features=Vulkan` on its own. Flags passed on the command line
+Do not add `DefaultANGLEVulkan`: it can stop VS Code from starting. If rendering breaks, try
+`--enable-features=Vulkan` on its own. Flags passed on the command line
 (`flatpak run com.visualstudio.code <flags>`) are applied after the file.
