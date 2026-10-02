@@ -17,9 +17,9 @@ app-id: ai.claude.desktop
 # The Electron base app supplies zypak, which lets Chromium sandbox itself
 # inside the Flatpak sandbox without a setuid helper.
 base: org.electronjs.Electron2.BaseApp
-base-version: '25.08'
+base-version: '26.08'
 runtime: org.freedesktop.Platform
-runtime-version: '25.08'
+runtime-version: '26.08'
 sdk: org.freedesktop.Sdk
 command: claude-desktop
 
