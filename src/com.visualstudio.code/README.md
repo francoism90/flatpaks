@@ -32,7 +32,7 @@ tracks it closely. It differs in the following ways:
 - **`host-spawn` built from source:** it is compiled with the Go SDK extension instead of bundling the
   upstream prebuilt binaries.
 - **Tool extensions:** `com.visualstudio.code.tool.*` extensions are accepted from both the `stable` and
-  `25.08` branches.
+  `26.08` branches.
 - **Distribution:** builds are GPG-signed and served from this repository's own remote, not Flathub.
 
 ## Install

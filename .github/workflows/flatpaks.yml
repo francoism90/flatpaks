@@ -23,7 +23,7 @@ jobs:
       # Ships flatpak, flatpak-builder and xvfb with the Flathub remote already configured.
       # Runtimes, BaseApps and SDK extensions are installed on demand (--install-deps-from),
       # so this tag does not have to match the runtime version the manifests build against.
-      image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-25.08
+      image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-26.08
       options: --privileged
 
     steps:
