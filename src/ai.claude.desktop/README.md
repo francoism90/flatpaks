@@ -68,7 +68,7 @@ bin/build ai.claude.desktop
 
 - **Chat, Claude Code** (integrated terminal, editor, diff review): work.
   Claude Code's shell commands and `git` run on the host via `host-spawn`
-  (see `claude-desktop.sh`, `host-shell.sh`, `host-exec.sh`, `host-git.sh`).
+  (see `claude-desktop.sh`, `host-shell.sh`, `host-bash.sh`, `host-git.sh`).
 - **Credentials, notifications, tray icon**: wired up via the Secret Service
   (`org.freedesktop.secrets`, KWallet), notification, and StatusNotifier
   D-Bus names in `finish-args`.
@@ -108,7 +108,7 @@ host — see "What works" above).
    app's `.desktop` entry.
 4. `claude-desktop.sh` launches the bundled Electron binary through
    `zypak-wrapper`, after probing the `org.freedesktop.Flatpak` portal and
-   pointing `$SHELL` / `$CLAUDE_CODE_SHELL_PREFIX` at the `host-*` wrappers so
+   pointing `$SHELL` / `$CLAUDE_CODE_SHELL` at the `host-*` wrappers so
    Claude Code's terminal and agent commands run on the host.
 
 ## Disclaimer
