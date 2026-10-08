@@ -158,7 +158,7 @@ modules:
       - install -Dm755 apply_extra "${FLATPAK_DEST}/bin/apply_extra"
       - install -Dm755 claude-desktop.sh "${FLATPAK_DEST}/bin/claude-desktop"
       - install -Dm755 host-shell.sh "${FLATPAK_DEST}/bin/host-shell"
-      - install -Dm755 host-exec.sh "${FLATPAK_DEST}/bin/host-exec"
+      - install -Dm755 host-bash.sh "${FLATPAK_DEST}/bin/host-bash"
       - install -Dm755 host-git.sh "${FLATPAK_DEST}/bin/host-git"
       # /app/bin is on the search path the app builds for git, and it is the
       # only entry on that path that has a git at all inside the sandbox.
@@ -213,7 +213,7 @@ modules:
       - type: file
         path: host-shell.sh
       - type: file
-        path: host-exec.sh
+        path: host-bash.sh
       - type: file
         path: host-git.sh
       - type: file
