@@ -53,28 +53,6 @@ jobs:
           upload-artifact: false
           gpg-sign: ${{ steps.gpg.outputs.fingerprint }}
 
-      - name: Build ai.claude.desktop
-        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
-        with:
-          manifest-path: src/ai.claude.desktop/ai.claude.desktop.yml
-          repo-dir: repo
-          state-dir: .flatpak-builder-claude
-          branch: stable
-          build-bundle: false
-          upload-artifact: false
-          gpg-sign: ${{ steps.gpg.outputs.fingerprint }}
-
-      - name: Build com.visualstudio.code
-        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
-        with:
-          manifest-path: src/com.visualstudio.code/com.visualstudio.code.yaml
-          repo-dir: repo
-          state-dir: .flatpak-builder-vscode
-          branch: stable
-          build-bundle: false
-          upload-artifact: false
-          gpg-sign: ${{ steps.gpg.outputs.fingerprint }}
-
       - name: List exported refs
         run: ostree --repo=repo refs
 

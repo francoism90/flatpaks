@@ -19,12 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-This license covers the packaging metadata in this repository only. Claude
-Desktop is proprietary software by Anthropic PBC and Visual Studio Code is
-proprietary software by Microsoft Corporation; both are downloaded from their
-vendors' servers at install time and are not redistributed here. See
-https://www.anthropic.com/legal/consumer-terms and
-https://code.visualstudio.com/license.

@@ -3,7 +3,7 @@
 #
 # Usage: bin/build <app-id> [--no-install]
 #
-#   bin/build com.visualstudio.code
+#   bin/build org.freedesktop.Sdk.Extension.podman
 #   bin/build org.freedesktop.Sdk.Extension.podman --no-install
 #
 # This is the local counterpart of .github/workflows/flatpaks.yml, without signing.

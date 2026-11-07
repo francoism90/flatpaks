@@ -6,17 +6,17 @@ Unofficial Flatpak builds that Flathub does not carry, published as one GPG-sign
 https://francoism90.github.io/flatpaks/index.flatpakrepo
 ```
 
-| App                                                                                       | What it is                                                                  |
-| ----------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| [`com.visualstudio.code`](src/com.visualstudio.code/README.md)                            | Visual Studio Code, repackaged from Microsoft's `.deb`                      |
-| [`ai.claude.desktop`](src/ai.claude.desktop/README.md)                                    | Claude Desktop, repackaged from Anthropic's `.deb`                          |
-| [`org.freedesktop.Sdk.Extension.podman`](src/org.freedesktop.Sdk.Extension.podman/README.md) | Podman SDK extension (upstream Flathub declined it), used by the VS Code build |
-
-The two proprietary apps use an `extra-data` source: their `.deb` is downloaded from the vendor onto
-your machine at install time, checksum-pinned in the manifest. No vendor binaries are hosted here.
+| App                                                                                          | What it is                                       |
+| -------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| [`org.freedesktop.Sdk.Extension.podman`](src/org.freedesktop.Sdk.Extension.podman/README.md) | Podman SDK extension (upstream Flathub declined it) |
 
 This repo replaces the separate `ai.claude.desktop`, `org.freedesktop.Sdk.Extension.podman` and
 `com.visualstudio.code` repos, which were built with [Flatter](https://github.com/andyholmes/flatter).
+
+### Moved
+
+- `com.visualstudio.code` is now on FlatPark: [flatpark.org/apps/com.visualstudio.code](https://flatpark.org/apps/com.visualstudio.code/).
+- `ai.claude.desktop` is gone. Use `com.anthropic.ClaudeDesktop` on FlatPark instead: [flatpark.org/apps/com.anthropic.ClaudeDesktop](https://flatpark.org/apps/com.anthropic.ClaudeDesktop/).
 
 ## Install
 
@@ -28,8 +28,6 @@ mix them, or you will get `requires the runtime ... which was not found`.
 flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 flatpak remote-add --user --if-not-exists flatpaks https://francoism90.github.io/flatpaks/index.flatpakrepo
 
-flatpak install flatpaks com.visualstudio.code
-flatpak install flatpaks ai.claude.desktop
 flatpak install flatpaks org.freedesktop.Sdk.Extension.podman
 ```
 
@@ -46,13 +44,14 @@ for remote in francoism90-vscode francoism90-claude-desktop francoism90-podman; 
 done
 ```
 
-Then install from `flatpaks` as above. Use the same scope you used originally (drop `--user` for a
+Then install VS Code and Claude Desktop from FlatPark, and the Podman extension from `flatpaks` as
+above. Use the same scope you used originally (drop `--user` for a
 system-wide install).
 
 ## Build locally
 
 ```bash
-bin/build com.visualstudio.code             # build and install for the current user
+bin/build org.freedesktop.Sdk.Extension.podman               # build and install for the current user
 bin/build org.freedesktop.Sdk.Extension.podman --no-install
 ```
 
@@ -82,7 +81,7 @@ and deploys it to GitHub Pages. Pull requests build unsigned and deploy nothing.
 
 [`update-checker.yml`](.github/workflows/update-checker.yml) runs
 [flatpak-external-data-checker](https://github.com/flathub/flatpak-external-data-checker) daily
-against every manifest and opens a PR when a `.deb` or source tarball has a new release. Merging it
+against every manifest and opens a PR when a source has a new release. Merging it
 triggers a rebuild.
 
 ## Setup (for a fork or a new copy)
@@ -103,5 +102,4 @@ triggers a rebuild.
 
 ## License
 
-MIT for the packaging metadata in this repository; see [LICENSE](LICENSE). The apps themselves are
-proprietary software of their vendors.
+MIT for the packaging metadata in this repository; see [LICENSE](LICENSE).
