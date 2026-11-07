@@ -32,12 +32,12 @@ modules:
       - install -Dm644 -t $FLATPAK_DEST/share/metainfo $FLATPAK_ID.metainfo.xml
     sources:
       - type: git
-        url: https://github.com/containers/podman.git
+        url: https://github.com/podman-container-tools/podman.git
         tag: v6.1.4
         commit: 464c15fec06f0074c916f9eff87c4806869c2833
         x-checker-data:
           type: json
-          url: https://api.github.com/repos/containers/podman/releases/latest
+          url: https://api.github.com/repos/podman-container-tools/podman/releases/latest
           tag-query: .tag_name
           timestamp-query: .published_at
           version-query: $tag | sub("^v"; "")
