@@ -6,17 +6,9 @@ Unofficial Flatpak builds that Flathub does not carry, published as one GPG-sign
 https://francoism90.github.io/flatpaks/index.flatpakrepo
 ```
 
-| App                                                                                          | What it is                                       |
-| -------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| [`org.freedesktop.Sdk.Extension.podman`](src/org.freedesktop.Sdk.Extension.podman/README.md) | Podman SDK extension (upstream Flathub declined it) |
-
-This repo replaces the separate `ai.claude.desktop`, `org.freedesktop.Sdk.Extension.podman` and
-`com.visualstudio.code` repos, which were built with [Flatter](https://github.com/andyholmes/flatter).
-
-### Moved
-
-- `com.visualstudio.code` is now on FlatPark: [flatpark.org/apps/com.visualstudio.code](https://flatpark.org/apps/com.visualstudio.code/).
-- `ai.claude.desktop` is gone. Use `com.anthropic.ClaudeDesktop` on FlatPark instead: [flatpark.org/apps/com.anthropic.ClaudeDesktop](https://flatpark.org/apps/com.anthropic.ClaudeDesktop/).
+| App                                                                                          | What it is                                        |
+| -------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| [`org.freedesktop.Sdk.Extension.podman`](src/org.freedesktop.Sdk.Extension.podman/README.md) | Podman SDK extension for VSCode, PHPStorm and Zed |
 
 ## Install
 
@@ -32,21 +24,6 @@ flatpak install flatpaks org.freedesktop.Sdk.Extension.podman
 ```
 
 `flatpak update` keeps them current.
-
-### Coming from the old per-app repos
-
-The old remotes were `francoism90-vscode`, `francoism90-claude-desktop` and `francoism90-podman`.
-`--force` uninstalls what came from them but keeps your data in `~/.var/app`:
-
-```bash
-for remote in francoism90-vscode francoism90-claude-desktop francoism90-podman; do
-    flatpak remote-delete --user --force "$remote"
-done
-```
-
-Then install VS Code and Claude Desktop from FlatPark, and the Podman extension from `flatpaks` as
-above. Use the same scope you used originally (drop `--user` for a
-system-wide install).
 
 ## Build locally
 
